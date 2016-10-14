@@ -60,4 +60,4 @@ $jmod --iset job.pkl
 
 ## Requirements ##
 * modern python version (tested with 2.7+)
-* ipdb 
+* ipdb (optional for interactive job modification)
