@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from typy.job.Monitor import UGEMonitor
+from typyQ.job.Monitor import UGEMonitor
 from itertools import cycle
 import argparse
 import cPickle
