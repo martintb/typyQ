@@ -1,7 +1,8 @@
 # typyQ
  
 The purpose of these scripts are to solve two main problems:
-1. Running on several clusters simultaneously can be confusing as each cluster may use different queueing systems (PBS/SLURM/SGE/UGE) which each require a separate set of commands to run/stop/manage simulations.
+
+1. Running on several clusters simultaneously can be confusing as each cluster may use different queueing systems (PBS/SLURM/SGE/UGE) which each require a separate set of commands to run/stop/manage jobs.
 2. Most clusters impose walltime limits that are many many times shorter than the needed length of the run.
 
 typyQ solves #1 by abstracting away the queue system behind a few thin classes. After creating a queue object of the correct type, the jsub command will read the queue object and take care of submitting the job and requesting the resources with the correct flags. 
