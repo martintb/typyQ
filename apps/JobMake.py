@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import ipdb;ist = ipdb.set_trace
 from typyQ import job
 import argparse
 import cPickle

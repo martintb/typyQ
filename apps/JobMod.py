@@ -1,16 +1,19 @@
 #!/usr/bin/env python
 
-import ipdb
-ist = ipdb.set_trace
+try:
+  import ipdb
+  ist = ipdb.set_trace
+except ImportError:
+  ist = None
 
-# from typy.job import *
 import argparse
 import cPickle
 
 parser = argparse.ArgumentParser()
 parser.add_argument('pkl', type=str)
 parser.add_argument('-s','--set',nargs=3, type=str)
-parser.add_argument('-i','--iset',action="store_true")
+if ist is not None:
+  parser.add_argument('-i','--iset',action="store_true")
 args = parser.parse_args()
 
 def printJob():
@@ -23,16 +26,21 @@ with open(args.pkl,'rb') as f:
 
 
 if args.iset:
-  print "-----------------------------------------------------------------"
-  printJob()
-  print "-----------------------------------------------------------------"
-  print ">>> Run \"printJob()\" to see current contents of job"
-  print ">>> Job attributes can be set via \"job.<attribute>=value\""
-  print ">>> Run \"q\" to quit modification without saving"
-  print ">>> Run \"c\" to write modifications to the pkl."
-  print "-----------------------------------------------------------------"
-  ist()
-  print ">>> Writing job modifications to disk!"
+  if ist is None:
+    print ">>> typyQ wasn't able to import ipdb."
+    print ">>> Interactive job modification not supported without ipdb."
+    exit(1)
+  else:
+    print "-----------------------------------------------------------------"
+    printJob()
+    print "-----------------------------------------------------------------"
+    print ">>> Run \"printJob()\" to see current contents of job"
+    print ">>> Job attributes can be set via \"job.<attribute>=value\""
+    print ">>> Run \"q\" to quit modification without saving"
+    print ">>> Run \"c\" to write modifications to the pkl."
+    print "-----------------------------------------------------------------"
+    ist()
+    print ">>> Writing job modifications to disk!"
 elif args.set:
   attr = args.set[0]
   val = args.set[1]

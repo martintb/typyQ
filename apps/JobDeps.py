@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# import ipdb;ist = ipdb.set_trace
 from typyQ.reader.util import parse_jobs
 from typyQ.reader.UGE import read_queue
 import argparse
