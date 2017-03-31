@@ -1,7 +1,7 @@
 from GridEngine import GridEngineJob
 import re
 
-class RuthJob(RuthJob):
+class RuthJob(GridEngineJob):
   def __init__(self):
     super(RuthJob,self).__init__()
   def check(self):
