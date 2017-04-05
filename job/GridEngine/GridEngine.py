@@ -12,6 +12,7 @@ class GridEngineJob(Job):
     argList = []
     argList.append('qsub -terse')
     argList.append('-j yes')
+    argList.append('-cwd')
     if isinstance(self.walltime,int):
       argList.append('-l h_rt={:02d}:00:00'.format(self.walltime))
     elif isinstance(self.walltime,float):
