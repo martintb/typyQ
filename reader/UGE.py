@@ -4,7 +4,7 @@ import re
 
 def read_queue(user_group=None):
   if user_group is None:
-    qstat_str = subprocess.check_output(shlex.split('qstat -u @jayaraman_lab -pri -ext'))
+    qstat_str = subprocess.check_output(shlex.split('qstat -u "tbm" -pri -ext'))
   else:
     qstat_str = subprocess.check_output(shlex.split('qstat -u "{}" -pri -ext'.format(user_group)))
   job_nums=[]

@@ -19,7 +19,7 @@ class Job(object):
     self.user = getuser()
     self.export_env=False
     self.node=None
-    print 'Creating job for',self.user
+    # print 'Creating job for',self.user
   def set_queue_file(self,fname,ignoreCheck=False):
     if ignoreCheck or os.path.exists(fname):
       self.queue_file = fname

@@ -63,6 +63,7 @@ elif args.set:
   print ">>> Setting {} to {}".format(attr,val)
   setattr(job,attr,val)
 else:
+  print ">>> JobClass:",job.__class__.__name__
   print "-----------------------------------------------------------------"
   printJob()
   print "-----------------------------------------------------------------"

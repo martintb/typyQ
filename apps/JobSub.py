@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from typyQ.job.Monitor import UGEMonitor
+# from typyQ.job.Monitor import UGEMonitor
 from itertools import cycle
 import argparse
 import cPickle
@@ -12,7 +12,7 @@ parser.add_argument('-p','--ppri', type=int, default=None)
 parser.add_argument('-q','--queue', type=str)
 parser.add_argument('-r','--reset',action='store_true')
 parser.add_argument('-o','--output',type=str,default='OUTPUTS')
-parser.add_argument('--qs_init',nargs='+')
+parser.add_argument('--qs_init',type=str)
 parser.add_argument('--qs',nargs='+')
 args = parser.parse_args()
 
@@ -28,18 +28,18 @@ if args.reset:
 
 qs_cycle = cycle(args.qs)
 for i in range(args.num_repeats):
-  if i==0 and isinstance(job,FarberJob):
-    if args.ppri is not None:
-      ppri=args.ppri
-    else:
-      mon = UGEMonitor()
-      ppri = mon.calc_priority()
-    job.set_priority(ppri)
+  # if i==0 and isinstance(job,FarberJob):
+  #   if args.ppri is not None:
+  #     ppri=args.ppri
+  #   else:
+  #     mon = UGEMonitor()
+  #     ppri = mon.calc_priority()
+  #   job.set_priority(ppri)
 
-  if job.run_number==0:
-    job.set_queue_file(initQ)
+  if job.run_number==0 and args.qs_init:
+    job.set_queue_file(args.qs_init)
   else:
-    job.set_queue_file(repQ)
+    job.set_queue_file(qs_cycle.next())
 
   job.submit()
   time.sleep(1)

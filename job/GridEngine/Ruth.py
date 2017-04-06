@@ -9,7 +9,7 @@ class RuthJob(GridEngineJob):
   def build_argList(self):
     self.check()
 
-    argList = super(VenusJob,self).build_argList()
+    argList = super(RuthJob,self).build_argList()
 
     if self.dependent_on:
       check_command = shlex.split('qstat -j {:d}'.format(self.dependent_on))
