@@ -3,7 +3,7 @@ import re
 
 class SLURMJob(Job):
   def __init__(self):
-    super(SlurmJob,self).__init__()
+    super(SLURMJob,self).__init__()
   def update_dependency(self,qsub_out):
     self.dependent_on = int(re.findall('Submitted batch job ([0-9]*)',qsub_out)[0])
   def check(self):
