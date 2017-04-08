@@ -26,7 +26,13 @@ if args.reset:
   job.run_number=0
   job.dependent_on=None
 
-qs_cycle = cycle(args.qs)
+if args.qs: 
+  qs_cycle = cycle(args.qs)
+elif job.queue_file:
+  qs_cycle = cycle([job.queue_file])
+else:
+  raise ValueError('Queue script must be specified via --qs or in job pkl!')
+
 for i in range(args.num_repeats):
   # if i==0 and isinstance(job,FarberJob):
   #   if args.ppri is not None:
