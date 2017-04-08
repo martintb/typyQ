@@ -1,9 +1,11 @@
 from ..Job import Job
 import re
+import shlex,subprocess
 
 class SLURMJob(Job):
   def __init__(self):
     super(SLURMJob,self).__init__()
+    self.dependency_type='afterok'
   def update_dependency(self,qsub_out):
     self.dependent_on = int(re.findall('Submitted batch job ([0-9]*)',qsub_out)[0])
   def check(self):
@@ -47,7 +49,7 @@ class SLURMJob(Job):
         print 'Ignoring hold request: Cannot find job {:d} in queue'.format(self.dependent_on)
       else:
         if re.search(self.user,jid_check):
-          argList.append('--dependency=afterok:{:d}'.format(self.dependent_on))
+          argList.append('--dependency={:s}:{:d}'.format(self.dependency_type,self.dependent_on))
         else:
           print 'Ignoring hold request: User does not own dependent job or job is not eligible for dependency'
 
