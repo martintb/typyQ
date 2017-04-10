@@ -11,6 +11,7 @@ parser.add_argument('--qs', action='store_true')
 jobType = parser.add_mutually_exclusive_group()
 jobType.add_argument('--ruth',    dest='jobType', action='store_const', const=job.RuthJob)
 jobType.add_argument('--farber',  dest='jobType', action='store_const', const=job.FarberJob)
+jobType.add_argument('--raritan',  dest='jobType', action='store_const', const=job.RARITANJob)
 args = parser.parse_args()
 
 if args.jobType is not None:
