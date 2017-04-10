@@ -1,24 +1,25 @@
 #!/usr/bin/env python
-from typyQ.reader.util import parse_jobs
-from typyQ.reader.UGE import read_queue
+import typyQ.reader
 import argparse
 
 parser = argparse.ArgumentParser()
+parser.add_argument('-q','--qtype', default='SLURM')
 parser.add_argument('-l','--list', action='store_true')
-parser.add_argument('-u','--user', default=None)
+parser.add_argument('-u','--user', default='tbm')
 parser.add_argument('-a','--all',action='store_true')
 args = parser.parse_args()
 
-if args.user:
-  user = args.user
-elif args.all:
-  user = "*"
-else:
+user = args.user
+if args.all:
   user = None
-job_list = read_queue(user)
-job_groups = parse_jobs(job_list)
 
-standby_map = {True:'standby', False:'labq'}
+if args.qtype=='SLURM':
+  job_list = typyQ.reader.SLURM.read_queue(user)
+elif args.qtype=='UGE':
+  job_list = typyQ.reader.UGE.read_queue(user)
+job_groups = typyQ.reader.util.parse_jobs(job_list)
+
+standby_map = {True:'preempt', False:'OU'}
 if args.list:
   for job_group in job_groups:
     user = job_group[0].user
