@@ -9,6 +9,8 @@ def dfs(graph, start, goal=None):
 
 def parse_jobs(job_list):
   job_list = sorted(job_list,key=lambda x: x.num,reverse=False)
+  job_num_list = [job.num for job in job_list]
+
 
   # First the 'job depedency/predecessor graph' needs to be constructed
   # for the depth-first-search (dfs) algorithm for work correctly.
@@ -17,7 +19,7 @@ def parse_jobs(job_list):
   job_dict = {}
   for job in job_list:
     neighbors = []
-    if job.predecessor:
+    if job.predecessor and (job.predecessor in job_num_list):
       neighbors.append(job.predecessor)
     graph[job.num] = set(neighbors)
     job_dict[job.num] = job
