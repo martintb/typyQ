@@ -6,6 +6,8 @@ class SLURMJob(Job):
   def __init__(self):
     super(SLURMJob,self).__init__()
     self.dependency_type='afterok'
+    self.notify = None
+    self.notify_signal = 'SIGTERM'
   def update_dependency(self,qsub_out):
     self.dependent_on = int(re.findall('Submitted batch job ([0-9]*)',qsub_out)[0])
   def check(self):
@@ -40,6 +42,9 @@ class SLURMJob(Job):
     if self.email:
       argList.append('--mail-type=ALL')
       argList.append('--mail-user={}'.format(self.email))
+
+    if self.notify is not None:
+      argList.append('--signal=B:{}@{}'.format(self.notify_signal,self.notify))
 
     if self.dependent_on:
       check_command = shlex.split('squeue -j {:d}'.format(self.dependent_on))
