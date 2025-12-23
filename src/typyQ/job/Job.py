@@ -1,7 +1,21 @@
 from getpass import getuser
-import shlex,subprocess
+import logging
 import os
 import re
+import shlex
+import subprocess
+import time
+
+
+logger = logging.getLogger(__name__)
+
+
+class JobConfigurationError(Exception):
+  """Raised when job configuration is invalid."""
+
+
+class JobSubmissionError(Exception):
+  """Raised when job submission fails."""
 
 class Job(object):
   def __init__(self):
@@ -23,25 +37,55 @@ class Job(object):
   def set_queue_file(self,fname,ignoreCheck=False):
     if ignoreCheck or os.path.exists(fname):
       self.queue_file = fname
-      print('Setting queue file to be',fname)
+      logger.info('Setting queue file to %s', fname)
     else:
-      print("The queue file you specified doesn't seem to exist:",fname)
-      print("Exiting...")
-      exit(1)
+      message = "The queue file you specified doesn't seem to exist: {:s}".format(fname)
+      logger.error(message)
+      raise FileNotFoundError(message)
   def default_checks(self):
     if not self.queue_file:
-      print('You must call job.set_queue_file(path_to_queue_file) before submission')
-      print("Exiting...")
-      exit(1)
+      message = 'You must call job.set_queue_file(path_to_queue_file) before submission'
+      logger.error(message)
+      raise JobConfigurationError(message)
   def submit(self):
     self.default_checks()
 
     argList = self.build_argList()
     command = ' '.join(argList)
 
-    print('Submitting job using:\n\t',command)
-    qsub_out = subprocess.check_output(shlex.split(command), text=True)
-    # print 'Output from Submission:\n\t',qsub_out
-    self.update_dependency(qsub_out)
+    logger.info('Submitting job using: %s', command)
+    submission_attempts = 0
+    while True:
+      try:
+        qsub_out = subprocess.check_output(
+          shlex.split(command), text=True, stderr=subprocess.STDOUT
+        )
+      except FileNotFoundError as exc:
+        message = f'Submission command not found: {command}'
+        logger.exception(message)
+        raise JobSubmissionError(message) from exc
+      except subprocess.CalledProcessError as exc:
+        submission_attempts += 1
+        logger.warning(
+          'Job submission failed (attempt %d): %s',
+          submission_attempts,
+          exc.output.strip(),
+        )
+        if submission_attempts >= 3:
+          raise JobSubmissionError(
+            f'Submission failed after {submission_attempts} attempts: {exc.output.strip()}'
+          ) from exc
+        time.sleep(submission_attempts)
+        continue
+      else:
+        logger.info('Submission output: %s', qsub_out.strip())
+        break
+
+    try:
+      self.update_dependency(qsub_out)
+    except Exception as exc:
+      logger.exception('Failed to parse submission output: %s', qsub_out)
+      raise JobSubmissionError('Unable to parse submission output for dependency tracking') from exc
+
     self.run_number+=1
 

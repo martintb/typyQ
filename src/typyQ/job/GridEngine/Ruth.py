@@ -1,6 +1,11 @@
-from .GridEngine import GridEngineJob
-import re
+import logging
+import shlex
 import subprocess
+
+from .GridEngine import GridEngineJob
+
+
+logger = logging.getLogger(__name__)
 
 class RuthJob(GridEngineJob):
   def __init__(self):
@@ -15,9 +20,13 @@ class RuthJob(GridEngineJob):
     if self.dependent_on:
       check_command = shlex.split('qstat -j {:d}'.format(self.dependent_on))
       try:
-        jid_check = subprocess.check_output(check_command, text=True)
-      except subprocess.CalledProcessError:
-        print('Ignoring hold request: Cannot find job {:d} in queue'.format(self.dependent_on))
+        jid_check = subprocess.check_output(check_command, text=True, stderr=subprocess.STDOUT)
+      except (subprocess.CalledProcessError, FileNotFoundError) as exc:
+        logger.warning(
+          'Ignoring hold request: cannot find job %d in queue (%s)',
+          self.dependent_on,
+          getattr(exc, 'output', str(exc)).strip(),
+        )
       else:
         argList.append('-hold_jid {:d}'.format(self.dependent_on))
 
