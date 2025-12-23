@@ -10,4 +10,5 @@ class JobData(object):
     state       = None
     name        = None
     num_cores   = None
+    gpu         = None
     self.__dict__.update(kwargs)

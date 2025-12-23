@@ -39,6 +39,17 @@ class SLURMJob(Job):
     if self.memory:
       argList.append('--mem-per-cpu={:d}gb'.format(self.memory))
 
+    if self.gpu:
+      try:
+        gpu_count = int(self.gpu)
+      except (TypeError, ValueError):
+        gpu_count = 1
+      else:
+        if gpu_count < 1:
+          gpu_count = 1
+
+      argList.append('--gres=gpu:{:d}'.format(gpu_count))
+
     if self.queue_name:
       argList.append('-p {}'.format(self.queue_name))
 
