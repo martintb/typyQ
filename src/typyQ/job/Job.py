@@ -33,6 +33,7 @@ class Job(object):
     self.user = getuser()
     self.export_env=False
     self.node=None
+    self.gpu=False
     # print 'Creating job for',self.user
   def set_queue_file(self,fname,ignoreCheck=False):
     if ignoreCheck or os.path.exists(fname):

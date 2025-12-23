@@ -41,6 +41,15 @@ def read_queue(user_group=None):
     else:
       num_cores = 1
 
+    gpu = None
+    gres_gpu = re.search('Gres=gpu:([0-9]+)', jd, flags=re.MULTILINE)
+    if gres_gpu:
+      gpu = int(gres_gpu.groups()[0])
+    else:
+      tres_gpu = re.search('TRES=.*gres/gpu=([0-9]+)', jd, flags=re.MULTILINE)
+      if tres_gpu:
+        gpu = int(tres_gpu.groups()[0])
+
 
     job_list.append(
                     JobData(
@@ -50,6 +59,7 @@ def read_queue(user_group=None):
                             state=state,
                             standby=standby,
                             num_cores=num_cores,
+                            gpu=gpu,
                             ppri=0,
                             held=None,
                             predecessor=predecessor
