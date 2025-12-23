@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from .JobData import JobData
 import shlex,subprocess
 import re
@@ -46,6 +48,10 @@ def read_queue(user_group=None):
       num_cores = int(num_cores.groups()[0])
     else:
       num_cores = 1
+    runtime = None
+    wallclock_match = re.search('wallclock=([0-9:]+)', jd)
+    if wallclock_match:
+      runtime = wallclock_match.groups()[0]
 
 
     job_list.append(
@@ -59,7 +65,8 @@ def read_queue(user_group=None):
                             ppri=ppri,
                             held=held,
                             successor=successor,
-                            predecessor=predecessor
+                            predecessor=predecessor,
+                            runtime=runtime
                            )
                     )
   return job_list

@@ -1,9 +1,21 @@
+from __future__ import annotations
+
 from .JobData import JobData
 import shlex,subprocess
 import re
+from typing import Iterable
+
+def _normalize_users(user_group: Iterable[str] | str | None) -> set[str] | None:
+  if user_group is None:
+    return None
+  if isinstance(user_group, str):
+    return {user_group}
+  return set(user_group)
+
 
 def read_queue(user_group=None):
   job_details = subprocess.check_output(shlex.split('scontrol show jobid'), text=True).split('\n\n')
+  allowed_users = _normalize_users(user_group)
 
   job_list = []
   for i,jd in enumerate(job_details):
@@ -11,10 +23,9 @@ def read_queue(user_group=None):
       continue
 
     user    = re.findall('UserId=([0-9a-zA-z]*)\([0-9]*\)',jd,flags=re.MULTILINE)[0]
-    if user_group:
-      if user not in user_group:
-        continue
-      
+    if allowed_users and user not in allowed_users:
+      continue
+
     job_num = int(re.findall('JobId=([0-9a-zA-z]*) ',jd,flags=re.MULTILINE)[0])
     name    = re.findall('JobName=(.*)$',jd,flags=re.MULTILINE)[0]
     state   = re.findall('JobState=([0-9a-zA-z]*) ',jd,flags=re.MULTILINE)[0]
@@ -25,6 +36,9 @@ def read_queue(user_group=None):
       standby = True
     else:
       standby = False
+
+    runtime_match = re.search('RunTime=([0-9:\-]+)', jd, flags=re.MULTILINE)
+    runtime = runtime_match.groups()[0] if runtime_match else None
 
     predecessor = re.search('Dependency=([a-zA-z0-9:()]*)',jd,flags=re.MULTILINE)
     # import ipdb; ipdb.set_trace()
@@ -62,7 +76,9 @@ def read_queue(user_group=None):
                             gpu=gpu,
                             ppri=0,
                             held=None,
-                            predecessor=predecessor
+                            predecessor=predecessor,
+                            runtime=runtime,
+                            queue=queue,
                            )
                     )
   return job_list

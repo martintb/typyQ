@@ -11,4 +11,6 @@ class JobData(object):
     name        = None
     num_cores   = None
     gpu         = None
+    runtime     = None
+    queue       = None
     self.__dict__.update(kwargs)

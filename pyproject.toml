@@ -20,6 +20,7 @@ jmod = "typyQ.cli.jmod:main"
 jread = "typyQ.cli.jread:main"
 jsub = "typyQ.cli.jsub:main"
 jdeps = "typyQ.cli.jdeps:main"
+jqueue = "typyQ.cli.jqueue:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
