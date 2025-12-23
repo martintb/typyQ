@@ -60,5 +60,38 @@ $jmod --iset job.pkl
 ```
 
 ## Requirements ##
-* modern python version (tested with 2.7+)
-* ipdb (optional for interactive job modification)
+* Modern Python (>=3.12)
+* `ipdb` (optional for interactive job modification)
+
+## Installation ##
+
+You can install typyQ with [uv](https://github.com/astral-sh/uv) (recommended) or any modern
+pip-compatible installer.
+
+### Using uv
+```bash
+uv pip install .
+```
+
+### Using pip
+```bash
+python -m pip install .
+```
+
+### Editable installs
+For local development you can install typyQ in editable mode:
+```bash
+uv pip install --editable .
+```
+
+## CLI usage ##
+
+After installation the following console scripts are available:
+
+* `jmake` – create a job pickle and optional queue script
+* `jmod` – modify a job pickle (supports interactive editing with `ipdb`)
+* `jread` – print a job pickle
+* `jsub` – submit jobs using the provided queue script(s)
+* `jdeps` – inspect queue dependencies
+
+Each command supports `-h`/`--help` for full usage details.
