@@ -1,10 +1,15 @@
 """Submit typyQ jobs to the configured queue."""
 from itertools import cycle
 import argparse
+import logging
 import time
 from typing import Optional
 
+from typyQ.job.Job import JobConfigurationError, JobSubmissionError
 from typyQ.job.model import load_job, save_job
+
+
+logger = logging.getLogger(__name__)
 
 
 def parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
@@ -21,10 +26,11 @@ def parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
 
 
 def main(argv: Optional[list[str]] = None) -> int:
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
     args = parse_args(argv)
     job, target_path, migrated = load_job(args.job_file)
     if migrated:
-        print(f">>> Migrated legacy pickle to {target_path}")
+        logger.info("Migrated legacy pickle to %s", target_path)
 
     if args.queue:
         job.set_queue_name(args.queue)
@@ -46,11 +52,25 @@ def main(argv: Optional[list[str]] = None) -> int:
         else:
             job.set_queue_file(next(qs_cycle))
 
-        job.submit()
+        try:
+            job.submit()
+        except FileNotFoundError as exc:
+            logger.error("Required file missing: %s", exc)
+            return 1
+        except JobConfigurationError as exc:
+            logger.error("Invalid job configuration: %s", exc)
+            return 2
+        except JobSubmissionError as exc:
+            logger.error("Job submission failed: %s", exc)
+            return 3
+        except Exception:
+            logger.exception("Unexpected error during job submission")
+            return 4
+
         time.sleep(1)
 
     save_job(target_path, job)
-    print(f">>> Updated job state saved to {target_path}")
+    logger.info("Updated job state saved to %s", target_path)
     return 0
 
 

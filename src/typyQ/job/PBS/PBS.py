@@ -1,7 +1,12 @@
-from ..Job import Job
+import logging
 import re
 import shlex
 import subprocess
+
+from ..Job import Job
+
+
+logger = logging.getLogger(__name__)
 
 class PBSJob(Job):
   def __init__(self):
@@ -35,14 +40,20 @@ class PBSJob(Job):
     if self.dependent_on:
       check_command = shlex.split('qstat -f {:d}'.format(self.dependent_on))
       try:
-        jid_check = subprocess.check_output(check_command, text=True)
-      except subprocess.CalledProcessError:
-        print('Ignoring hold request: Cannot find job {:d} in queue'.format(self.dependent_on))
+        jid_check = subprocess.check_output(check_command, text=True, stderr=subprocess.STDOUT)
+      except (subprocess.CalledProcessError, FileNotFoundError) as exc:
+        logger.warning(
+          'Ignoring hold request: cannot find job %d in queue (%s)',
+          self.dependent_on,
+          getattr(exc, 'output', str(exc)).strip(),
+        )
       else:
         if re.search(self.user,jid_check) and not re.search('job_state = C',jid_check):
           argList.append('-W depend=afterok:{:d}'.format(self.dependent_on))
         else:
-          print('Ignoring hold request: User does not own dependent job or job is not eligible for dependency')
+          logger.warning(
+            'Ignoring hold request: User does not own dependent job or job is not eligible for dependency'
+          )
 
     if self.exclusive:
       argList.append('-l naccesspolicy=singlejob')
