@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 from ..Job import Job
 import re
 
@@ -35,12 +37,12 @@ class PBSJob(Job):
       try:
         jid_check = subprocess.check_output(check_command)
       except subprocess.CalledProcessError:
-        print 'Ignoring hold request: Cannot find job {:d} in queue'.format(self.dependent_on)
+        print('Ignoring hold request: Cannot find job {:d} in queue'.format(self.dependent_on))
       else:
         if re.search(self.user,jid_check) and not re.search('job_state = C',jid_check):
           argList.append('-W depend=afterok:{:d}'.format(self.dependent_on))
         else:
-          print 'Ignoring hold request: User does not own dependent job or job is not eligible for dependency'
+          print('Ignoring hold request: User does not own dependent job or job is not eligible for dependency')
 
     if self.exclusive:
       argList.append('-l naccesspolicy=singlejob')

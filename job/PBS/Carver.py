@@ -1,4 +1,4 @@
-from PBS import PBSJob
+from .PBS import PBSJob
 
 class CarverJob(PBSJob):
   def __init__(self):

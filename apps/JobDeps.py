@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+from __future__ import print_function
+
 import typyQ.reader
 import argparse
 
@@ -27,9 +29,9 @@ if args.list:
     size = job_group[0].num_cores
     queue= standby_map[job_group[0].standby]
     num_jobs = len(job_group)
-    print user,name,queue,num_jobs,'x',size
+    print(user,name,queue,num_jobs,'x',size)
     for job in job_group:
-      print job.stateno
+      print(job.stateno)
 else:
   maxUserLen = max([len(group[0].user) for group in job_groups])
   maxNameLen = max([len(group[0].name) for group in job_groups])
@@ -44,6 +46,6 @@ else:
       job_list = '[{}...{}]'.format(job_group[0].stateno,job_group[-1].stateno)
     else:
       job_list = '[{}]'.format(job_group[0].stateno)
-    print jobString.format(user,name,queue,num_jobs,size,job_list)
+    print(jobString.format(user,name,queue,num_jobs,size,job_list))
   
   

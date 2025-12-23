@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 from ..Job import Job
 import re
 import shlex,subprocess
@@ -51,12 +53,12 @@ class SLURMJob(Job):
       try:
         jid_check = subprocess.check_output(check_command)
       except subprocess.CalledProcessError:
-        print 'Ignoring hold request: Cannot find job {:d} in queue'.format(self.dependent_on)
+        print('Ignoring hold request: Cannot find job {:d} in queue'.format(self.dependent_on))
       else:
         if re.search(self.user,jid_check):
           argList.append('--dependency={:s}:{:d}'.format(self.dependency_type,self.dependent_on))
         else:
-          print 'Ignoring hold request: User does not own dependent job or job is not eligible for dependency'
+          print('Ignoring hold request: User does not own dependent job or job is not eligible for dependency')
 
     argList.append('{:s}'.format(self.queue_file))
     return argList

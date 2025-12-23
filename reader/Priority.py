@@ -1,4 +1,6 @@
-from MinMax import MinMax
+from __future__ import print_function
+
+from .MinMax import MinMax
 from collections import namedtuple
 import shlex,subprocess
 import re
@@ -12,7 +14,7 @@ class Priority:
     if value>=-1023 and value<=1023:
       self.priority_ceiling = value
     else:
-      print 'Priority ceiling must be in range -1023<value<1023. You specified',value
+      print('Priority ceiling must be in range -1023<value<1023. You specified',value)
       exit(1)
     self.update_users()
   def get_users(self,users=None):
@@ -31,7 +33,7 @@ class Priority:
         #or higher than the user max and updates the users's data accordingly
         priority[job.user].update(job.ppri)
         priority['all'].update(job.ppri)
-    for user in priority.iterkeys():
+    for user in priority.keys():
       if priority[user].max is None or priority[user].max>self.priority_ceiling:
         priority[user].max = self.priority_ceiling
 
@@ -39,7 +41,7 @@ class Priority:
         priority[user].min = self.priority_ceiling
     return self.priority
   def print_priority(self):
-    print '{:20s} {:4s} {:4s}'.format('user','min','max')
-    print '{:20s} {:4s} {:4s}'.format('----------','----','----')
-    for key in self.priority.iterkeys():
-      print '{:20s} {:4d} {:4d}'.format(key,self.priority[key].min,self.priority[key].max)
+    print('{:20s} {:4s} {:4s}'.format('user','min','max'))
+    print('{:20s} {:4s} {:4s}'.format('----------','----','----'))
+    for key in self.priority.keys():
+      print('{:20s} {:4d} {:4d}'.format(key,self.priority[key].min,self.priority[key].max))

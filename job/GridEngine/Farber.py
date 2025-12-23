@@ -1,4 +1,6 @@
-from GridEngine import GridEngineJob
+from __future__ import print_function
+
+from .GridEngine import GridEngineJob
 import re
 
 class FarberJob(GridEngineJob):
@@ -10,15 +12,15 @@ class FarberJob(GridEngineJob):
   def set_walltime(self,walltime):
     if walltime<=24:
       self.walltime = int(walltime)
-      print "Setting a walltime of {:d} hours".format(self.walltime)
+      print("Setting a walltime of {:d} hours".format(self.walltime))
     else:
-      print "Please use a maximum walltime of 24 hours for our queue."
-      print "You requested a {:d} hour walltime.".format(int(walltime))
+      print("Please use a maximum walltime of 24 hours for our queue.")
+      print("You requested a {:d} hour walltime.".format(int(walltime)))
       exit(1)
   def check(self):
     if self.ppri is None:
-      print 'You must call job.set_priority(ppri) before submission'
-      print "Exiting..."
+      print('You must call job.set_priority(ppri) before submission')
+      print("Exiting...")
       exit(1)
   def set_priority(self,ppri):
     if isinstance(ppri,dict):
@@ -41,7 +43,7 @@ class FarberJob(GridEngineJob):
       try:
         jid_check = subprocess.check_output(check_command)
       except subprocess.CalledProcessError:
-        print 'Ignoring hold request: Cannot find job {:d} in queue'.format(self.dependent_on)
+        print('Ignoring hold request: Cannot find job {:d} in queue'.format(self.dependent_on))
       else:
         argList.append('-hold_jid {:d}'.format(self.dependent_on))
         if not self.standby:

@@ -1,4 +1,4 @@
-from NoQ import NoQJob
+from .NoQ import NoQJob
 
 class NeonJob(NoQJob):
   #no specialization needed!

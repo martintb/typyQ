@@ -1,4 +1,4 @@
-from SLURM import SLURMJob
+from .SLURM import SLURMJob
 
 class StampedeJob(SLURMJob):
   #no specialization needed!

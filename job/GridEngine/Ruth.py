@@ -1,4 +1,6 @@
-from GridEngine import GridEngineJob
+from __future__ import print_function
+
+from .GridEngine import GridEngineJob
 import re
 
 class RuthJob(GridEngineJob):
@@ -16,7 +18,7 @@ class RuthJob(GridEngineJob):
       try:
         jid_check = subprocess.check_output(check_command)
       except subprocess.CalledProcessError:
-        print 'Ignoring hold request: Cannot find job {:d} in queue'.format(self.dependent_on)
+        print('Ignoring hold request: Cannot find job {:d} in queue'.format(self.dependent_on))
       else:
         argList.append('-hold_jid {:d}'.format(self.dependent_on))
 

@@ -1,4 +1,4 @@
-from JobData import JobData
+from .JobData import JobData
 import shlex,subprocess
 import re
 

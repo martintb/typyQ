@@ -1,7 +1,8 @@
 #!/usr/bin/env python
+from __future__ import print_function
+
 from typyQ import job
 import argparse
-import cPickle
 
 
 parser = argparse.ArgumentParser()
@@ -15,12 +16,13 @@ jobType.add_argument('--raritan',  dest='jobType', action='store_const', const=j
 args = parser.parse_args()
 
 if args.jobType is not None:
-  print '>>> Making empty job file "{}" of type "{}"'.format(args.name,args.jobType.__name__)
-  with open(args.name,'wb') as f:
-    cPickle.dump(args.jobType(),f,-1)
+  target = job.ensure_toml_path(args.name)
+  print('>>> Making empty job file "{}" of type "{}"'.format(target,args.jobType.__name__))
+  model = job.JobModel.from_job(args.jobType())
+  job.save_job_model(model, target)
 
 if args.qs:
-  print '>>> Making generic run script "run.qs"'
+  print('>>> Making generic run script "run.qs"')
   with open('run.qs','w') as f:
     f.write('#!/bin/bash -l\n')
     f.write('# export OMP_NUM_THREADS=8\n')
@@ -43,8 +45,8 @@ if args.qs:
     f.write('touch DONE\n')
 
 if not args.qs and (args.jobType is None):
-  print '>>> If you\'ve made it here, there is a good chance you are not using this tool correctly.'
-  print '>> Use the --qs flag to direct this tool to create a generic queue script,'
-  print '>> or specify a jobType to create a generic, empty job pkl.'
-  print '>> See the help output below for more information.'
+  print('>>> If you\'ve made it here, there is a good chance you are not using this tool correctly.')
+  print('>> Use the --qs flag to direct this tool to create a generic queue script,')
+  print('>> or specify a jobType to create a generic, empty job toml.')
+  print('>> See the help output below for more information.')
   parser.print_help()

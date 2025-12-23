@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 from getpass import getuser
 import shlex,subprocess
 import os
@@ -23,15 +25,15 @@ class Job(object):
   def set_queue_file(self,fname,ignoreCheck=False):
     if ignoreCheck or os.path.exists(fname):
       self.queue_file = fname
-      print 'Setting queue file to be',fname
+      print('Setting queue file to be',fname)
     else:
-      print "The queue file you specified doesn't seem to exist:",fname
-      print "Exiting..."
+      print("The queue file you specified doesn't seem to exist:",fname)
+      print("Exiting...")
       exit(1)
   def default_checks(self):
     if not self.queue_file:
-      print 'You must call job.set_queue_file(path_to_queue_file) before submission'
-      print "Exiting..."
+      print('You must call job.set_queue_file(path_to_queue_file) before submission')
+      print("Exiting...")
       exit(1)
   def submit(self):
     self.default_checks()
@@ -39,7 +41,7 @@ class Job(object):
     argList = self.build_argList()
     command = ' '.join(argList)
 
-    print 'Submitting job using:\n\t',command
+    print('Submitting job using:\n\t',command)
     qsub_out = subprocess.check_output(shlex.split(command))
     # print 'Output from Submission:\n\t',qsub_out
     self.update_dependency(qsub_out)
