@@ -22,25 +22,25 @@ def read_queue(user_group=None):
     if not jd:
       continue
 
-    user    = re.findall('UserId=([0-9a-zA-z]*)\([0-9]*\)',jd,flags=re.MULTILINE)[0]
+    user    = re.findall(r'UserId=([0-9a-zA-z]*)\([0-9]*\)', jd, flags=re.MULTILINE)[0]
     if allowed_users and user not in allowed_users:
       continue
 
-    job_num = int(re.findall('JobId=([0-9a-zA-z]*) ',jd,flags=re.MULTILINE)[0])
-    name    = re.findall('JobName=(.*)$',jd,flags=re.MULTILINE)[0]
-    state   = re.findall('JobState=([0-9a-zA-z]*) ',jd,flags=re.MULTILINE)[0]
+    job_num = int(re.findall(r'JobId=([0-9a-zA-z]*) ', jd, flags=re.MULTILINE)[0])
+    name    = re.findall(r'JobName=(.*)$', jd, flags=re.MULTILINE)[0]
+    state   = re.findall(r'JobState=([0-9a-zA-z]*) ', jd, flags=re.MULTILINE)[0]
 
 
-    queue   = re.findall('Partition=([a-zA-z]*) ',jd,flags=re.MULTILINE)[0]
+    queue   = re.findall(r'Partition=([a-zA-z]*) ', jd, flags=re.MULTILINE)[0]
     if queue == 'preemptible':
       standby = True
     else:
       standby = False
 
-    runtime_match = re.search('RunTime=([0-9:\-]+)', jd, flags=re.MULTILINE)
+    runtime_match = re.search(r'RunTime=([0-9:\-]+)', jd, flags=re.MULTILINE)
     runtime = runtime_match.groups()[0] if runtime_match else None
 
-    predecessor = re.search('Dependency=([a-zA-z0-9:()]*)',jd,flags=re.MULTILINE)
+    predecessor = re.search(r'Dependency=([a-zA-z0-9:()]*)', jd, flags=re.MULTILINE)
     # import ipdb; ipdb.set_trace()
     if predecessor:
       predecessor = predecessor.groups()[0]
@@ -49,18 +49,18 @@ def read_queue(user_group=None):
       else:
         predecessor = int(predecessor.split(':')[1])
 
-    num_cores = re.search('NumCPUs=([0-9]*)',jd,flags=re.MULTILINE)
+    num_cores = re.search(r'NumCPUs=([0-9]*)', jd, flags=re.MULTILINE)
     if num_cores:
       num_cores = int(num_cores.groups()[0])
     else:
       num_cores = 1
 
     gpu = None
-    gres_gpu = re.search('Gres=gpu:([0-9]+)', jd, flags=re.MULTILINE)
+    gres_gpu = re.search(r'Gres=gpu:([0-9]+)', jd, flags=re.MULTILINE)
     if gres_gpu:
       gpu = int(gres_gpu.groups()[0])
     else:
-      tres_gpu = re.search('TRES=.*gres/gpu=([0-9]+)', jd, flags=re.MULTILINE)
+      tres_gpu = re.search(r'TRES=.*gres/gpu=([0-9]+)', jd, flags=re.MULTILINE)
       if tres_gpu:
         gpu = int(tres_gpu.groups()[0])
 
