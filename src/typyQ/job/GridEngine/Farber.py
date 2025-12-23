@@ -61,7 +61,7 @@ class FarberJob(GridEngineJob):
         argList.append('-hold_jid {:d}'.format(self.dependent_on))
         if not self.standby:
           #update ppri to follow this jobs dependency
-          self.ppri = int(re.findall('priority:\s*(\-?[0-9]*)',jid_check)[0]) - 1
+          self.ppri = int(re.findall(r'priority:\s*(\-?[0-9]*)', jid_check)[0]) - 1
 
     if not self.standby:
       argList.append('-p {:d}'.format(self.ppri))

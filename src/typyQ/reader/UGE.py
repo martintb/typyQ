@@ -30,20 +30,20 @@ def read_queue(user_group=None):
 
   job_list = []
   for i,jd in enumerate(job_details):
-    job_num = int(re.findall('job_number:\s*([0-9a-zA-z]*)',jd)[0])
+    job_num = int(re.findall(r'job_number:\s*([0-9a-zA-z]*)', jd)[0])
     ppri    = basic_job_data[job_num]['ppri']
     state   = basic_job_data[job_num]['state']
     held    = basic_job_data[job_num]['held']
-    user = re.findall('owner:\s*([0-9a-zA-z]*)',jd)[0]
-    name = re.findall('job_name:\s*(.*)',jd)[0]
-    standby = not (re.search('standby=1',jd) == None)
-    predecessor = re.search('jid_predecessor_list:\s*([0-9]*)\s*',jd)
-    successor = re.search('jid_successor_list:\s*([0-9]*)\s*',jd)
+    user = re.findall(r'owner:\s*([0-9a-zA-z]*)', jd)[0]
+    name = re.findall(r'job_name:\s*(.*)', jd)[0]
+    standby = not (re.search(r'standby=1', jd) == None)
+    predecessor = re.search(r'jid_predecessor_list:\s*([0-9]*)\s*', jd)
+    successor = re.search(r'jid_successor_list:\s*([0-9]*)\s*', jd)
     if successor:
       successor = int(successor.groups()[0])
     if predecessor:
       predecessor = int(predecessor.groups()[0])
-    num_cores = re.search('parallel environment:.*\s*range:\s*([0-9]*)\s*',jd)
+    num_cores = re.search(r'parallel environment:.*\s*range:\s*([0-9]*)\s*', jd)
     if num_cores:
       num_cores = int(num_cores.groups()[0])
     else:
