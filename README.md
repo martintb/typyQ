@@ -14,14 +14,14 @@ This code is somewhat a WIP and has some other features not described here.
 ## Examples ##
 Create a queue object for the Farber supercomputing cluster:
 ```
-$ jmake --farber job.pkl
+$ jmake --farber job.job.toml
 Creating job for tbm
->>> Making empty job file: job.pkl
+>>> Making empty job file: job.job.toml
 ```
 Read the contents of the queue object:
 ```
-$ jread job.pkl
->>> Reading job file: job.pkl
+$ jread job.job.toml
+>>> Reading job file: job.job.toml
 -----------------------------------------------------------------
 export_env          : False
 exclusive           : False
@@ -46,18 +46,21 @@ walltime            : 4
 ```
 Modify the queue object:
 ```
-$jmod job.pkl --set name MD_mpi str
->>> Reading job file: job.pkl
+$jmod job.job.toml --set name MD_mpi str
+>>> Reading job file: job.job.toml
 >>> Setting name to md_mpi
 
-$jmod job.pkl --set num_procs 4 int
->>> Reading job file: job.pkl
+$jmod job.job.toml --set num_procs 4 int
+>>> Reading job file: job.job.toml
 >>> Setting num_procs to 4
 ```
 Interactively modify the queue object:
 ```
-$jmod --iset job.pkl
+$jmod --iset job.job.toml
 ```
+
+Existing `.pkl` job files are automatically migrated to the TOML format the
+first time they are read by `jread`, `jmod`, or `jsub`.
 
 ## Requirements ##
 * Modern Python (>=3.12)
@@ -88,9 +91,9 @@ uv pip install --editable .
 
 After installation the following console scripts are available:
 
-* `jmake` – create a job pickle and optional queue script
-* `jmod` – modify a job pickle (supports interactive editing with `ipdb`)
-* `jread` – print a job pickle
+* `jmake` – create a job configuration and optional queue script
+* `jmod` – modify a job configuration (supports interactive editing with `ipdb`)
+* `jread` – print a job configuration
 * `jsub` – submit jobs using the provided queue script(s)
 * `jdeps` – inspect queue dependencies
 

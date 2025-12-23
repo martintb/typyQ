@@ -10,7 +10,9 @@ readme = "README.md"
 requires-python = ">=3.12"
 license = {file = "LICENSE"}
 authors = [{name = "typyQ Maintainers"}]
-dependencies = []
+dependencies = [
+    "tomli-w>=1.0.0",
+]
 
 [project.scripts]
 jmake = "typyQ.cli.jmake:main"
