@@ -38,9 +38,9 @@ uv pip install --editable .
 ## Getting started
 
 1. **Install typyQ** using `uv pip install .` (or `python -m pip install .`).
-2. **Create a job file** with the scheduler template you need. For example, to scaffold a Slurm job: `jmake --slurm job.job.toml` (other supported templates include PBS and SGE/UGE).
-3. **Submit the job** after editing values as needed (walltime, processors, etc.): `jsub job.job.toml`.
-4. **Inspect or tweak the configuration** with `jread job.job.toml` or modify values interactively: `jmod --iset job.job.toml`.
+2. **Create a job file** with the scheduler template you need. For example, to scaffold a Slurm job: `jmake --slurm job.toml` (other supported templates include PBS and SGE/UGE).
+3. **Submit the job** after editing values as needed (walltime, processors, etc.): `jsub job.toml`.
+4. **Inspect or tweak the configuration** with `jread job.toml` or modify values interactively: `jmod --iset job.toml`.
 
 Existing `.pkl` job files are automatically migrated to the TOML format the first time they are read by `jread`, `jmod`, or `jsub`.
 
@@ -59,14 +59,14 @@ Each command supports `-h`/`--help` for full usage details.
 ## Examples
 Create a queue object for the Farber (Slurm) supercomputing cluster:
 ```
-$ jmake --farber job.job.toml
+$ jmake --farber job.toml
 Creating job for tbm
->>> Making empty job file: job.job.toml
+>>> Making empty job file: job.toml
 ```
 Read the contents of the queue object:
 ```
-$ jread job.job.toml
->>> Reading job file: job.job.toml
+$ jread job.toml
+>>> Reading job file: job.toml
 -----------------------------------------------------------------
 export_env          : False
 exclusive           : False
@@ -91,15 +91,15 @@ walltime            : 4
 ```
 Modify the queue object:
 ```
-$ jmod job.job.toml --set name MD_mpi str
->>> Reading job file: job.job.toml
+$ jmod job.toml --set name MD_mpi str
+>>> Reading job file: job.toml
 >>> Setting name to md_mpi
 
-$ jmod job.job.toml --set num_procs 4 int
->>> Reading job file: job.job.toml
+$ jmod job.toml --set num_procs 4 int
+>>> Reading job file: job.toml
 >>> Setting num_procs to 4
 ```
 Interactively modify the queue object:
 ```
-$ jmod --iset job.job.toml
+$ jmod --iset job.toml
 ```
