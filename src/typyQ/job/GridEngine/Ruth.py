@@ -12,10 +12,8 @@ class RuthJob(GridEngineJob):
     super(RuthJob,self).__init__()
   def check(self):
     pass
-  def build_argList(self):
-    self.check()
-
-    argList = super(RuthJob,self).build_argList()
+  def submission_cmd(self):
+    argList = super(RuthJob,self).submission_cmd()
 
     if self.dependent_on:
       check_command = shlex.split('qstat -j {:d}'.format(self.dependent_on))

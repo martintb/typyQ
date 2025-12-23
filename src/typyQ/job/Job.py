@@ -48,18 +48,54 @@ class Job(object):
       message = 'You must call job.set_queue_file(path_to_queue_file) before submission'
       logger.error(message)
       raise JobConfigurationError(message)
+
+  def check(self):
+    """
+    Hook for subclasses to validate configuration prior to submission.
+
+    Default behavior performs no additional validation.
+    """
+    return None
+
+  def parse_submission_id(self, submission_output):
+    """
+    Hook for subclasses to parse the submission output for dependency tracking.
+
+    Return ``None`` when no submission identifier is available.
+    """
+    return None
+
+  def submission_cmd(self):
+    """
+    Hook for subclasses to construct the submission command.
+
+    Returns either a command string or an iterable of command arguments.
+    """
+    if hasattr(self, 'build_argList'):
+      return self.build_argList()
+
+    raise JobSubmissionError('No submission command configured for this job')
   def submit(self):
     self.default_checks()
+    self.check()
 
-    argList = self.build_argList()
-    command = ' '.join(argList)
+    command = self.submission_cmd()
+    if not command:
+      raise JobSubmissionError('Submission command was not provided')
 
-    logger.info('Submitting job using: %s', command)
+    if isinstance(command, str):
+      argList = shlex.split(command)
+      command_display = command
+    else:
+      argList = list(command)
+      command_display = ' '.join(argList)
+
+    logger.info('Submitting job using: %s', command_display)
     submission_attempts = 0
     while True:
       try:
         qsub_out = subprocess.check_output(
-          shlex.split(command), text=True, stderr=subprocess.STDOUT
+          argList, text=True, stderr=subprocess.STDOUT
         )
       except FileNotFoundError as exc:
         message = f'Submission command not found: {command}'
@@ -83,10 +119,13 @@ class Job(object):
         break
 
     try:
-      self.update_dependency(qsub_out)
+      submission_id = self.parse_submission_id(qsub_out)
     except Exception as exc:
       logger.exception('Failed to parse submission output: %s', qsub_out)
       raise JobSubmissionError('Unable to parse submission output for dependency tracking') from exc
+
+    if submission_id is not None:
+      self.dependent_on = submission_id
 
     self.run_number+=1
 

@@ -6,9 +6,10 @@ class GridEngineJob(Job):
     super(GridEngineJob,self).__init__()
     self.pe=None
     self.reserve=False
-  def update_dependency(self,qsub_out):
-    self.dependent_on = int(qsub_out.split('.')[0]) #split for handling array jobs correctly
-  def build_argList(self):
+  def parse_submission_id(self,qsub_out):
+    return int(qsub_out.split('.')[0]) #split for handling array jobs correctly
+
+  def submission_cmd(self):
     argList = []
     argList.append('qsub -terse')
     argList.append('-j yes')
