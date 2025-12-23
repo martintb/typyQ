@@ -1,10 +1,10 @@
-"""Create typyQ job pickle files and optional queue scripts."""
+"""Create typyQ job configuration files and optional queue scripts."""
 import argparse
 import pathlib
-import pickle
 from typing import Optional
 
 from typyQ import job
+from typyQ.job.model import DEFAULT_EXTENSION, normalize_job_path, save_job
 
 
 QUEUE_SCRIPT = """#!/bin/bash -l
@@ -42,17 +42,20 @@ def write_queue_script(path: pathlib.Path) -> None:
     print(f">>> Making generic run script \"{path.name}\"")
 
 
-def write_job_pickle(path: pathlib.Path, job_type: Optional[type]) -> None:
+def write_job_config(path: pathlib.Path, job_type: Optional[type]) -> None:
     if job_type is None:
         return
     print(f'>>> Making empty job file "{path.name}" of type "{job_type.__name__}"')
-    with path.open("wb") as handle:
-        pickle.dump(job_type(), handle, protocol=pickle.HIGHEST_PROTOCOL)
+    save_job(path, job_type())
 
 
 def parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument("name", type=pathlib.Path)
+    parser.add_argument(
+        "name",
+        type=pathlib.Path,
+        help=f"Base name for job configuration (defaults to {DEFAULT_EXTENSION})",
+    )
     parser.add_argument("--qs", action="store_true", help="Also write a generic queue script")
 
     job_type_group = parser.add_mutually_exclusive_group()
@@ -65,18 +68,19 @@ def parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
 def main(argv: Optional[list[str]] = None) -> int:
     args = parse_args(argv)
     job_type = JOB_TYPES.get(args.job_type) if args.job_type else None
+    target_path = normalize_job_path(args.name)
 
     if job_type is None and not args.qs:
         print(
             ">>> If you've made it here, there is a good chance you are not using this tool correctly.\n"
             ">> Use the --qs flag to direct this tool to create a generic queue script,\n"
-            ">> or specify a jobType to create a generic, empty job pkl.\n"
+            ">> or specify a jobType to create a generic, empty job configuration file.\n"
             ">> See the help output below for more information."
         )
         parse_args(["-h"])
         return 1
 
-    write_job_pickle(args.name, job_type)
+    write_job_config(target_path, job_type)
     if args.qs:
         write_queue_script(pathlib.Path("run.qs"))
     return 0

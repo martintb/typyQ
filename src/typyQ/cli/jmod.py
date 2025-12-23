@@ -1,7 +1,8 @@
-"""Modify typyQ job pickle files."""
+"""Modify typyQ job configuration files."""
 import argparse
-import pickle
 from typing import Any, Optional
+
+from typyQ.job.model import load_job, save_job
 
 try:
     import ipdb
@@ -16,7 +17,7 @@ def print_job(job: Any) -> None:
 
 def parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument("pkl", type=str)
+    parser.add_argument("job_file", type=str, help="Path to job configuration (.job.toml)")
     parser.add_argument("-s", "--set", nargs=3, type=str)
     if ipdb is not None:
         parser.add_argument("-i", "--iset", action="store_true")
@@ -34,7 +35,7 @@ def interactive_edit(job: Any) -> None:
         ">>> Run \"print_job(job)\" to see current contents of job\n"
         ">>> Job attributes can be set via \"job.<attribute>=value\"\n"
         ">>> Run \"q\" to quit modification without saving\n"
-        ">>> Run \"c\" to write modifications to the pkl.\n"
+        ">>> Run \"c\" to write modifications to the job file.\n"
         "-----------------------------------------------------------------"
     )
     ipdb.set_trace()
@@ -60,9 +61,10 @@ def apply_set(job: Any, attr: str, val: str, val_type: str) -> None:
 
 def main(argv: Optional[list[str]] = None) -> int:
     args = parse_args(argv)
-    print(f">>> Reading job file: {args.pkl}")
-    with open(args.pkl, "rb") as handle:
-        job = pickle.load(handle)
+    job, target_path, migrated = load_job(args.job_file)
+    print(f">>> Reading job file: {target_path}")
+    if migrated:
+        print(f">>> Migrated legacy pickle to {target_path}")
 
     wrote_changes = False
     if getattr(args, "iset", False):
@@ -78,8 +80,10 @@ def main(argv: Optional[list[str]] = None) -> int:
         print("-----------------------------------------------------------------")
 
     if wrote_changes:
-        with open(args.pkl, "wb") as handle:
-            pickle.dump(job, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        save_job(target_path, job)
+        print(f">>> Wrote job configuration to {target_path}")
+    elif migrated:
+        print(f">>> Legacy job already migrated to {target_path}")
     return 0
 
 
