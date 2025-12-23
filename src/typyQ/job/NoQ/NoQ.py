@@ -7,8 +7,7 @@ class NoQJob(Job):
     super(NoQJob,self).__init__()
   def check(self):
     pass
-  def build_argList(self):
-    self.check()
+  def submission_cmd(self):
     argList = []
     argList.append('bash -l {:s} & echo $!'.format(self.queue_file))
 

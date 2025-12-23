@@ -12,12 +12,10 @@ class PBSJob(Job):
   def __init__(self):
     super(PBSJob,self).__init__()
     self.gpu=False
-  def update_dependency(self,qsub_out):
-    self.dependent_on = int(qsub_out.strip().split('.')[0])
-  def check(self):
-    pass
-  def build_argList(self):
-    self.check()
+  def parse_submission_id(self,qsub_out):
+    return int(qsub_out.strip().split('.')[0])
+
+  def submission_cmd(self):
     argList = []
     argList.append('qsub')
     argList.append('-j oe')

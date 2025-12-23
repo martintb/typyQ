@@ -14,12 +14,10 @@ class SLURMJob(Job):
     self.dependency_type='afterok'
     self.notify = None
     self.notify_signal = 'SIGTERM'
-  def update_dependency(self,qsub_out):
-    self.dependent_on = int(re.findall('Submitted batch job ([0-9]*)',qsub_out)[0])
-  def check(self):
-    pass
-  def build_argList(self):
-    self.check()
+  def parse_submission_id(self,qsub_out):
+    return int(re.findall('Submitted batch job ([0-9]*)',qsub_out)[0])
+
+  def submission_cmd(self):
     argList = []
     argList.append('sbatch')
     argList.append('-t {:02d}:00:00'.format(self.walltime))

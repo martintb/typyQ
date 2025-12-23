@@ -12,10 +12,8 @@ class VenusJob(GridEngineJob):
     super(VenusJob,self).__init__()
   def check(self):
     pass
-  def build_argList(self):
-    self.check()
-
-    argList = super(VenusJob,self).build_argList()
+  def submission_cmd(self):
+    argList = super(VenusJob,self).submission_cmd()
 
     if self.dependent_on:
       check_command = shlex.split('qstat -j {:d}'.format(self.dependent_on))

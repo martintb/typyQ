@@ -39,10 +39,8 @@ class FarberJob(GridEngineJob):
         self.ppri = ppri[self.user].min-1
     else:
       self.ppri = ppri
-  def build_argList(self):
-    self.check()
-
-    argList = super(FarberJob,self).build_argList()
+  def submission_cmd(self):
+    argList = super(FarberJob,self).submission_cmd()
 
     if self.standby:
       argList.append('-l standby=1')
